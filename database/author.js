@@ -8,6 +8,6 @@ const authorSchema=mongoose.Schema({
     
 });
 //creating model
-const authorModel=mongoose.model({authorSchema});
+const authorModel=mongoose.model("author",authorSchema);
 
 module.exports=authorModel;

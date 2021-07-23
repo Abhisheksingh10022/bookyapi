@@ -2,8 +2,18 @@ require("dotenv").config();
 const express=require("express");
 const mongoose=require("mongoose");
 //initialization
+
 const booky=express();
 const database=require("./database");
+//models for book
+const bookmodels=require("./database/books");
+
+//models for authors
+const authormodels=require("./database/author");
+// models for publications
+
+const publicationmodels=require("./database/publication");
+
 booky.use(express.json());
 mongoose.connect(process.env.MONGO_URL,
 {
