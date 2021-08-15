@@ -4,7 +4,7 @@ const bookSchema=mongoose.Schema({
     
     ISBN:String,
     tittle:String,
-         pubDate:String,
+     pubDate:String,
      language:String,
      numPages:Number,
      author:[Number],
@@ -13,6 +13,6 @@ const bookSchema=mongoose.Schema({
         });
 
 //create a modal
-const bookModel=mongoose.model(bookSchema);
+const bookModel=mongoose.model("books",bookSchema);
 
 module.exports=bookModel;

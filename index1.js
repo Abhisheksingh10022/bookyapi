@@ -6,13 +6,13 @@ const mongoose=require("mongoose");
 const booky=express();
 const database=require("./database");
 //models for book
-
+const bookModel=require("./database/books.js");
 
 //models for authors
-
+const authorModel=require("./database/author.js");
 // models for publications
 
-
+const publicationModel=require("./database/publication.js");
 
 booky.use(express.json());
 /*establish connection with mongoose*/
@@ -27,8 +27,12 @@ mongoose.connect(process.env.MONGO_URL,
     console.log("connection established");
 })
   
+booky.get("/",async (req,res)=>{
+    const getallbooks= await bookModel.find();
+    return res.json({allbooks:getallbooks});
+})
 booky.get("/is/:isbn",async (req,res)=>{
-   const getspecificbook= await bookmodels.findOne({ISBN:req.params.isbn});
+   const getspecificbook= await bookModel.findOne({ISBN:req.params.isbn});
 
    if(!getspecificbook)
    {
@@ -36,7 +40,7 @@ booky.get("/is/:isbn",async (req,res)=>{
    }
    return res.json({book:getspecificbook});
 });
-booky.get("/b/:isbn",(req,res)=>{
+/*booky.get("/b/:isbn",(req,res)=>{
     const arr=[];
     database.books.forEach(
         (book)=>  arr.push(book.category)
@@ -48,29 +52,29 @@ booky.get("/b/:isbn",(req,res)=>{
     return res.json({
         book:filtered
     })
-});
+});*/
 booky.get("/c/:category",async (req,res)=>{
-const getbookbycategory=await bookmodels.findOne({category:req.params.category});
+const getbookbycategory=await bookModel.findOne({category:req.params.category});
 if(!getbookbycategory)
 {
     return res.json("error");
 }
-return re.json({book:getbookbycategory});
+return res.json({book:getbookbycategory});
 
     });
     //add new book in book database
     //get a book from req.body and post it to book database using post http method
-booky.post("/book/add",(req,res)=>{
+booky.post("/book/add", async (req,res)=>{
 const {newbook}=req.body;
 
-const addnewbook=bookmodels.create(newbook);
+const addnewbook=  bookModel.create(newbook);
 return res.json({book:addnewbook,message:"book was added"});
 
 })
-booky.post("/author/add",(req,res)=>{
+booky.post("/author/add", async (req,res)=>{
 const {newauthor}=req.body;
-database.authors.push(newauthor);
-return res.json({authors:database.authors});
+const addnewauthor=authorModel.create(newauthor);
+return res.json({author:addnewauthor,message:"author added"});
 });
 /*update/add new book in publication*/
 booky.put("/update/publication/:isbn",(req,res)=>{
