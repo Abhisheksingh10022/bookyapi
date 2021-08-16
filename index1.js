@@ -76,6 +76,21 @@ const {newauthor}=req.body;
 const addnewauthor=authorModel.create(newauthor);
 return res.json({author:addnewauthor,message:"author added"});
 });
+/*update the tittle of a book*/
+booky.put("/book/update/:isbn",async (req,res)=>{
+const updatebook= await bookModel.findOneAndUpdate(
+    {
+        ISBN:req.params.isbn,
+    },
+    {
+        tittle:req.body.tittle,
+    },
+    {
+    new:true,
+}
+);
+return res.json({book:updatebook});
+});
 /*update/add new book in publication*/
 booky.put("/update/publication/:isbn",(req,res)=>{
     database.publications.forEach((publication)=>{
