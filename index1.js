@@ -64,13 +64,15 @@ return res.json({book:getbookbycategory});
     });
     //add new book in book database
     //get a book from req.body and post it to book database using post http method
+    // add new book to database
 booky.post("/book/add", async (req,res)=>{
 const {newbook}=req.body;
 
 const addnewbook=  bookModel.create(newbook);
 return res.json({book:addnewbook,message:"book was added"});
 
-})
+});
+//add new author to the database
 booky.post("/author/add", async (req,res)=>{
 const {newauthor}=req.body;
 const addnewauthor=authorModel.create(newauthor);
@@ -80,36 +82,63 @@ return res.json({author:addnewauthor,message:"author added"});
 booky.put("/book/update/:isbn",async (req,res)=>{
 const updatebook= await bookModel.findOneAndUpdate(
     {
-        ISBN:req.params.isbn,
+        ISBN:req.params.isbn
     },
     {
-        tittle:req.body.tittle,
+        tittle:req.body.tittle
     },
     {
-    new:true,
+    new:true
 }
 );
 return res.json({book:updatebook});
 });
-/*update/add new book in publication*/
-booky.put("/update/publication/:isbn",(req,res)=>{
-    database.publications.forEach((publication)=>{
-        if(publication.id===req.body.pubID)
+// add author to a book
+booky.put("/book/update/author/:isbn",async(req,res)=>{
+    const updatedbook=await bookModel.findOneAndUpdate(
         {
-            publication.books.push(req.params.isbn);
-            return;
-        }
-    });
-    database.books.forEach((book)=>{
-        if(book.ISBN===req.params.isbn)
+            ISBN:req.params.isbn
+        },
         {
-            book.publications=req.body.pubID;
-            return;
+         $addToSet:{
+             author:req.body.newauthor
+         }
+        },
+        {
+            new:true
         }
-    });
-    return res.json({book:database.books,
-        publications:database.publications});
+    );
+    const updatedauthor=await authorModel.findOneAndUpdate(
+        {
+         id:req.body.newauthor   
+        },
+        {
+        $addToSet:{
+            books:req.params.isbn
+        }
+    },
+    {
+        new:true,
+    }
+    );
+return res.json({book:updatedbook});
 });
+/*update/add new book in publication*/
+booky.put("/update/book/publication/:tittle",async(req,res)=>{
+    const updatedbook=await bookModel.findOneAndUpdate(
+        {
+            ISBN:req.params.tittle
+        },{
+            publications:req.body.publication
+        },
+        {
+            new:true
+        }
+    );
+    return res.json({book:updatedbook});
+});
+
+
 booky.delete("/del/book/:id/:isbn",(req,res)=>{
     database.publications.forEach((publication)=>{
         if(publication.id===parseInt(req.params.id))
